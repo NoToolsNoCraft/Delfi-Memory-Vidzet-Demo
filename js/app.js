@@ -118,7 +118,7 @@ function checkwin(num) {
     switch (difficultyClass) {
         case 'normal':
             if (num === 8) {
-                won = true;
+                won = true; // Add this line to set 'won' to true
             }
             break;
     }
@@ -190,15 +190,21 @@ function matchChecker(e) {
 function updateShareLinks() {
     const time = document.getElementById('final-time').innerText;
     const moves = document.getElementById('final-moves').innerText;
-    const gameUrl = 'https://herbalia.rs/';
-    const message = `Razbio/la sam Herbalia memorijsku igru za ${time} sekundi i ${moves} poteza! Memoriši. Poveži. Osvoji i ti 10% ovde: ${gameUrl}`;
+	
+    const gameUrl = window.location.href;
+    
+    const message = `Razbio/la sam Delfi memorijsku igru za ${time} sekundi i ${moves} poteza! Memoriši. Poveži. Osvoji i ti 10% ovde: ${gameUrl}`;
     const encodedMessage = encodeURIComponent(message);
+
+    
 
     document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameUrl)}`;
     document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${encodedMessage}`;
     document.getElementById('shareViber').href = `viber://forward?text=${encodedMessage}`;
     document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent(gameUrl)}&text=${encodedMessage}`;
 }
+
+window.addEventListener('load', updateShareLinks);
 
 function updateLeaderboard() {
     const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
