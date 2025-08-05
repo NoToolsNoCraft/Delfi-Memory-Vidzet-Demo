@@ -118,27 +118,34 @@ function checkwin(num) {
     switch (difficultyClass) {
         case 'normal':
             if (num === 8) {
-                won = true; // Add this line to set 'won' to true
+                won = true;
             }
             break;
     }
     if (won === true) {
-        setTimeout(function () {
-            document.getElementById('final-time').innerText = timer.innerText;
-            document.getElementById('final-moves').innerText = moves;
-            document.getElementById('final-rating').innerHTML = document.getElementById('stars').innerHTML;
-            document.getElementById('game-time').value = sec;
-            document.getElementById('game-moves').value = moves;
-            document.getElementById('game-score').value = calculateScore(sec, moves);
-            modal.classList.remove('hide');
-            resultForm.style.display = 'block';
-            thankYouMessage.style.display = 'none';
-            updateLeaderboard();
-            updateShareLinks();
-            clearInterval(setTimer);
-        }, 1000);
-    }
+    setTimeout(function () {
+        const finalTime = timer.innerText;
+        const finalMoves = moves;
+        document.getElementById('final-time').innerText = finalTime;
+        document.getElementById('final-moves').innerText = finalMoves;
+        document.getElementById('final-rating').innerHTML = document.getElementById('stars').innerHTML;
+        document.getElementById('game-time').value = sec;
+        document.getElementById('game-moves').value = moves;
+        document.getElementById('game-score').value = calculateScore(sec, moves);
+
+        // 🟢 Call this BEFORE showing modal to make sure hrefs are ready
+        updateShareLinks();
+
+        modal.classList.remove('hide');
+        resultForm.style.display = 'block';
+        thankYouMessage.style.display = 'none';
+        updateLeaderboard();
+        clearInterval(setTimer);
+    }, 1000);
+  }
 }
+
+
 
 function matchChecker(e) {
     if (e.target.classList.contains('card') && !e.target.classList.contains('front-open')) {
@@ -188,23 +195,22 @@ function matchChecker(e) {
 }
 
 function updateShareLinks() {
-    const time = document.getElementById('final-time').innerText;
-    const moves = document.getElementById('final-moves').innerText;
-	
+    console.log("Running updateShareLinks..."); // 🔍 Confirm it's running
+
+    const time = document.getElementById('final-time').innerText || '0';
+    const moves = document.getElementById('final-moves').innerText || '0';
     const gameUrl = window.location.href;
-    
+
     const message = `Razbio/la sam Delfi memorijsku igru za ${time} sekundi i ${moves} poteza! Memoriši. Poveži. Osvoji i ti 10% ovde: ${gameUrl}`;
     const encodedMessage = encodeURIComponent(message);
 
-    
-
-    document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameUrl)}`;
+    document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameUrl)}&quote=${encodedMessage}`;
     document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${encodedMessage}`;
     document.getElementById('shareViber').href = `viber://forward?text=${encodedMessage}`;
     document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent(gameUrl)}&text=${encodedMessage}`;
 }
 
-window.addEventListener('load', updateShareLinks);
+
 
 function updateLeaderboard() {
     const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
@@ -253,6 +259,9 @@ function startGame() {
     timer.innerText = '0';
     document.getElementById('moves').innerHTML = '0';
     modal.classList.add('hide');
+    document.getElementById('final-time').innerText = ''; // Reset final-time
+    document.getElementById('final-moves').innerText = ''; // Reset final-moves
+    document.getElementById('final-rating').innerHTML = ''; // Reset final-rating
     ratingPerfect.classList.remove('hide');
     ratingAverage.classList.remove('hide');
     resultForm.style.display = 'block';
@@ -291,10 +300,7 @@ modal.addEventListener('click', function (e) {
 
 board.addEventListener('click', matchChecker);
 
-window.addEventListener('load', () => {
-    startGame();
-    updateLeaderboard();
-});
+
 
 const openBtn = document.getElementById('openGameButton');
 const overlay = document.getElementById('memoryGameOverlay');
@@ -320,6 +326,13 @@ function closePanel() {
     overlay.setAttribute('inert', '');
     openBtn.focus();
 }
+
+// Remove duplicate window.load listener and updateShareLinks call
+window.addEventListener('load', () => {
+    startGame();
+    updateLeaderboard();
+    // Removed updateShareLinks() from here
+});
 
 
 
